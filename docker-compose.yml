@@ -19,7 +19,6 @@ services:
     image: api
     build: 
       dockerfile: Dockerfile-main
-    restart: always
     depends_on:
       db:
         condition: service_healthy
