@@ -12,7 +12,7 @@ func Run(db *gorm.DB) {
 	router := gin.Default()
 	conn := apicontroller.NewConnection(db)
 	getRoutes(router, conn)
-	router.Run(":8080")
+	router.Run(":8282")
 }
 
 // Returns a router for running the tests

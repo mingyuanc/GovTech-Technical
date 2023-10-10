@@ -11,17 +11,30 @@ services:
       - POSTGRES_PASSWORD=pg
     ports:
       - '5432:5432'
-  # db-test:
-  #   image: postgres:alpine3.18
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U pg -d pg"]
+      interval: 1s
+      timeout: 1s
+  api:
+    image: api
+    build: 
+      dockerfile: Dockerfile-main
+    restart: always
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8282:8282"
+    environment:
+      - DATABASE_URL=postgres://pg:pg@db:5432/pg
+    command: ["sh", "-c", "./backend"]
+  # api-test:
+  #   image: api-test
+  #   build: 
+  #     dockerfile: Dockerfile-test
+  #   depends_on:
+  #     db:
+  #       condition: service_healthy
   #   environment:
-  #     - POSTGRES_NAME=pg-test
-  #     - POSTGRES_USER=pg-test
-  #     - POSTGRES_PASSWORD=pg-test
-  #   ports:
-  #     - '5433:5432'
-  # api:
-  #   image: api
-  #   build: .
-  #   restart: always
-  #   ports:
-  #     - "8282:8282"
+  #     - DATABASE_URL=postgres://pg:pg@db:5432/pg
+  #   command: ["go", "test", "./tests"]

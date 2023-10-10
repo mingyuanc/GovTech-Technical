@@ -1,5 +1,5 @@
 
-FROM golang:1.21
+FROM golang:1.21.2-alpine3.18 as build
 
 # Set destination for COPY
 WORKDIR /go/src/api
@@ -12,8 +12,17 @@ RUN go mod download
 # https://docs.docker.com/engine/reference/builder/#copy
 COPY ./ ./
 
+
 # Build
-RUN go build -o /docker-build
+RUN go build -o /backend
+
+FROM build As test
+
+FROM alpine:3.18
+
+WORKDIR /api
+
+COPY --from=build /backend ./backend
 
 # Optional:
 # To bind to a TCP port, runtime parameters must be supplied to the docker command.
@@ -21,6 +30,3 @@ RUN go build -o /docker-build
 # the application is going to listen on by default.
 # https://docs.docker.com/engine/reference/builder/#expose
 EXPOSE 8282
-
-# Run
-CMD ["/docker-build"]

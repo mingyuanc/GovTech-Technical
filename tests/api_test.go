@@ -13,6 +13,7 @@ import (
 	"github.com/mingyuanc/GovTech-Technical/utils"
 	"github.com/stretchr/testify/assert"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 var Router *gin.Engine
@@ -20,10 +21,14 @@ var DB *gorm.DB
 
 // Creates the required variable and starts the test
 func TestMain(m *testing.M) {
-	DB = utils.ConnectTest()
+	DB = utils.Connect()
 	Router = routes.RunTest(DB)
 
 	m.Run()
+
+	// clean up
+	DB.Unscoped().Select(clause.Associations).Delete(&models.Teacher{}, "email LIKE ? ", "test%")
+	DB.Unscoped().Select(clause.Associations).Delete(&models.Student{}, "email LIKE ? ", "test%")
 }
 
 // Test ping route
@@ -45,9 +50,9 @@ type registerBody struct {
 // Test register route, correct email
 // Expected 204 status code
 func TestEmail_204(t *testing.T) {
-	email := "teacher@gmail.com"
-	students := []string{"stu3@hotmail.com",
-		"stu2@u.nus.edu", "stu1@gmail.com"}
+	email := "testTeacher@gmail.com"
+	students := []string{"teststu3@hotmail.com",
+		"teststu2@u.nus.edu", "teststu1@gmail.com"}
 	reqBody := &registerBody{Teacher: email, Students: students}
 
 	payloadBuf := new(bytes.Buffer)
@@ -64,9 +69,9 @@ func TestEmail_204(t *testing.T) {
 // Test register route, bad teacher email
 // Expected 400 status code
 func TestBadTeacherEmail_400(t *testing.T) {
-	email := "teacher.com"
-	students := []string{"stu3@hotmail.com",
-		"stu2@u.nus.edu", "stu1@gmail.com"}
+	email := "testteacher.com"
+	students := []string{"teststu3@hotmail.com",
+		"teststu2@u.nus.edu", "teststu1@gmail.com"}
 	reqBody := &registerBody{Teacher: email, Students: students}
 
 	payloadBuf := new(bytes.Buffer)
@@ -85,9 +90,9 @@ func TestBadTeacherEmail_400(t *testing.T) {
 // Test register route, bad student email for index 0
 // Expected 400 status code
 func TestOneBadStudentrEmail_400(t *testing.T) {
-	email := "teacher@gmail.com"
-	students := []string{"stu3.com",
-		"stu2@u.nus.edu", "stu1@gmail.com"}
+	email := "testTeacher@gmail.com"
+	students := []string{"teststu3.com",
+		"teststu2@u.nus.edu", "teststu1@gmail.com"}
 	reqBody := &registerBody{Teacher: email, Students: students}
 
 	payloadBuf := new(bytes.Buffer)
@@ -108,7 +113,7 @@ func TestOneBadStudentrEmail_400(t *testing.T) {
 // Test register route, empty student array
 // Expected 400 status code
 func TestNoStudent_400(t *testing.T) {
-	email := "teacher@gmail.com"
+	email := "testTeacher@gmail.com"
 	students := []string{}
 	reqBody := &registerBody{Teacher: email, Students: students}
 
@@ -130,8 +135,8 @@ func TestNoStudent_400(t *testing.T) {
 // Test register route, teacher to student association
 // Expected to exit without error
 func TestTeacherToMutiStudentAssociation_Pass(t *testing.T) {
-	email := "associator@gmail.com"
-	students := []string{"associated1@gmail.com"}
+	email := "testassociator@gmail.com"
+	students := []string{"testassociated1@gmail.com"}
 	reqBody := &registerBody{Teacher: email, Students: students}
 
 	payloadBuf := new(bytes.Buffer)
@@ -145,10 +150,10 @@ func TestTeacherToMutiStudentAssociation_Pass(t *testing.T) {
 
 	var teacher models.Teacher
 	DB.Preload("Students").Where("email = ?", email).First(&teacher)
-	assert.Equal(t, teacher.Students[0].Email, "associated1@gmail.com")
+	assert.Equal(t, teacher.Students[0].Email, "testassociated1@gmail.com")
 
 	// add another student to teacher
-	students = []string{"associated2@gmail.com"}
+	students = []string{"testassociated2@gmail.com"}
 	reqBody = &registerBody{Teacher: email, Students: students}
 	json.NewEncoder(payloadBuf).Encode(reqBody)
 
@@ -158,15 +163,15 @@ func TestTeacherToMutiStudentAssociation_Pass(t *testing.T) {
 	assert.Equal(t, 204, w.Code)
 
 	DB.Preload("Students").Where("email = ?", email).First(&teacher)
-	assert.Equal(t, teacher.Students[0].Email, "associated1@gmail.com")
-	assert.Equal(t, teacher.Students[1].Email, "associated2@gmail.com")
+	assert.Equal(t, teacher.Students[0].Email, "testassociated1@gmail.com")
+	assert.Equal(t, teacher.Students[1].Email, "testassociated2@gmail.com")
 }
 
 // Test register route, teacher to student association
 // Expected to exit without error
 func TestStudentToMutiTeacherAssociation_Pass(t *testing.T) {
-	email := "associated1@gmail.com"
-	students := []string{"associator@gmail.com"}
+	email := "testassociated1@gmail.com"
+	students := []string{"testassociator@gmail.com"}
 	reqBody := &registerBody{Teacher: email, Students: students}
 
 	payloadBuf := new(bytes.Buffer)
@@ -179,11 +184,11 @@ func TestStudentToMutiTeacherAssociation_Pass(t *testing.T) {
 	assert.Equal(t, 204, w.Code)
 
 	var student models.Student
-	DB.Preload("Teachers").Where("email = ?", "associator@gmail.com").First(&student)
-	assert.Equal(t, student.Teachers[0].Email, "associated1@gmail.com")
+	DB.Preload("Teachers").Where("email = ?", "testassociator@gmail.com").First(&student)
+	assert.Equal(t, student.Teachers[0].Email, "testassociated1@gmail.com")
 
 	// add another teacher to student
-	email = "associated2@gmail.com"
+	email = "testassociated2@gmail.com"
 	reqBody = &registerBody{Teacher: email, Students: students}
 	json.NewEncoder(payloadBuf).Encode(reqBody)
 
@@ -192,7 +197,7 @@ func TestStudentToMutiTeacherAssociation_Pass(t *testing.T) {
 	Router.ServeHTTP(w, req)
 	assert.Equal(t, 204, w.Code)
 
-	DB.Preload("Teachers").Where("email = ?", "associator@gmail.com").First(&student)
-	assert.Equal(t, student.Teachers[0].Email, "associated1@gmail.com")
-	assert.Equal(t, student.Teachers[1].Email, "associated2@gmail.com")
+	DB.Preload("Teachers").Where("email = ?", "testassociator@gmail.com").First(&student)
+	assert.Equal(t, student.Teachers[0].Email, "testassociated1@gmail.com")
+	assert.Equal(t, student.Teachers[1].Email, "testassociated2@gmail.com")
 }
