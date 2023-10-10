@@ -11,6 +11,14 @@ services:
       - POSTGRES_PASSWORD=pg
     ports:
       - '5432:5432'
+  # db-test:
+  #   image: postgres:alpine3.18
+  #   environment:
+  #     - POSTGRES_NAME=pg-test
+  #     - POSTGRES_USER=pg-test
+  #     - POSTGRES_PASSWORD=pg-test
+  #   ports:
+  #     - '5433:5432'
   # api:
   #   image: api
   #   build: .
