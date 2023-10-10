@@ -7,7 +7,7 @@ import (
 	"gorm.io/gorm"
 )
 
-// Run will start the server
+// Starts the router and listens for requests
 func Run(db *gorm.DB) {
 	router := gin.Default()
 	conn := apicontroller.NewConnection(db)
@@ -15,9 +15,16 @@ func Run(db *gorm.DB) {
 	router.Run(":8080")
 }
 
+// Returns a router for running the tests
+func RunTest(db *gorm.DB) *gin.Engine {
+	router := gin.Default()
+	conn := apicontroller.NewConnection(db)
+	getRoutes(router, conn)
+	return router
+}
+
 // getRoutes will create our routes of our entire application
 // this way every group of routes can be defined in their own file
-// so this one won't be so messy
 func getRoutes(router *gin.Engine, conn *apicontroller.Connection) {
 	api.AddApiRoutes(router, conn)
 }
