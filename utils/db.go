@@ -24,6 +24,19 @@ func Connect() *gorm.DB {
 }
 
 // Checks if specified teacher is present in the database
+func IsStudentPresent(db *gorm.DB, studentEmail string) bool {
+	var student models.Student
+	err := db.Where(&models.Student{Email: studentEmail}).First(&student).Error
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return false
+	}
+	if err != nil {
+		panic(err)
+	}
+	return true
+}
+
+// Checks if specified teacher is present in the database
 func IsTeacherPresent(db *gorm.DB, teacherEmail string) bool {
 	var teacher models.Teacher
 	err := db.Where(&models.Teacher{Email: teacherEmail}).First(&teacher).Error
@@ -62,4 +75,8 @@ func GetStudentFromTeacher(db *gorm.DB, teacherEmail string) ([]models.Student, 
 	}
 	err = db.Model(&teacher).Association("Students").Find(&students)
 	return students, err
+}
+
+func SuspendStudent(db *gorm.DB, studentEmail string) error {
+	return db.Model(&models.Student{}).Where("email = ?", studentEmail).Update("is_suspended", true).Error
 }
