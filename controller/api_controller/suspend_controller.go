@@ -10,15 +10,15 @@ import (
 
 // Controller for the registration endpoint
 func (conn *Connection) HandleSuspend(c *gin.Context) {
-	registerBody := models.SuspendBody{}
+	suspendBody := models.SuspendBody{}
 
 	// Checks if json body is in correct format
-	if err := c.ShouldBind(&registerBody); err != nil {
+	if err := c.ShouldBind(&suspendBody); err != nil {
 		// change here if want change error
 		c.IndentedJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	studentEmail := registerBody.Student
+	studentEmail := suspendBody.Student
 	if !utils.IsStudentPresent(conn.db, studentEmail) {
 		c.IndentedJSON(http.StatusBadRequest, gin.H{"error": "Student not found: " + studentEmail})
 		return
