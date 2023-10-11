@@ -12,23 +12,8 @@ import (
 )
 
 func SuspendSetUp() {
-
-	students := []*models.Student{
-		{Email: "testsuspend1@gmail.com"},
-		{Email: "testsuspend2@gmail.com"},
-		{Email: "testnotsuspend1@gmail.com"},
-		{Email: "testnotsuspend2@gmail.com"},
-	}
-
-	suspendTeacher := models.Teacher{
-		Email: "testsuspendteacher@gmail.com",
-	}
-
-	DB.Create(&suspendTeacher)
-	for _, student := range students {
-		DB.Create(student)
-		DB.Model(student).Association("Teachers").Append(&suspendTeacher)
-	}
+	student := models.Student{Email: "testsuspend@gmail.com"}
+	DB.Create(&student)
 }
 
 type suspendBody struct {
@@ -38,7 +23,7 @@ type suspendBody struct {
 // Test suspend route, correct email
 // Expected 204 status code
 func TestSuspend_204(t *testing.T) {
-	reqBody := &suspendBody{Student: "testsuspend1@gmail.com"}
+	reqBody := &suspendBody{Student: "testsuspend@gmail.com"}
 
 	payloadBuf := new(bytes.Buffer)
 	json.NewEncoder(payloadBuf).Encode(reqBody)

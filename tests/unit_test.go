@@ -13,7 +13,10 @@ import (
 // Expect extracted email
 func TestSplitEmail_Pass(t *testing.T) {
 	expected := []string{"studentagnes@gmail.com", "studentmiche@gmail.com"}
-	actual := utils.ExtractEmailFromString("Hello students! @studentagnes@gmail.com @studentmiche@gmail.com", "@")
+	actual, notValid := utils.ExtractEmailFromString("Hello students! @studentagnes@gmail.com @studentmiche@gmail.com", "@")
+	if notValid != "" {
+		t.Fail()
+	}
 	assert.ElementsMatch(t, expected, actual)
 }
 
@@ -21,22 +24,31 @@ func TestSplitEmail_Pass(t *testing.T) {
 // Expect empty array
 func TestNoEmail_Pass(t *testing.T) {
 	expected := []string{}
-	actual := utils.ExtractEmailFromString("Hello Hey everybody!", "@")
+	actual, notValid := utils.ExtractEmailFromString("Hello Hey everybody!", "@")
+	if notValid != "" {
+		t.Fail()
+	}
 	assert.ElementsMatch(t, expected, actual)
 }
 
 // Test string with flags but no email
-// Expect empty array
-func TestHasFlagButInvalidEmail_Pass(t *testing.T) {
-	expected := []string{}
-	actual := utils.ExtractEmailFromString("Hello Hey @everybody!", "@")
-	assert.ElementsMatch(t, expected, actual)
+// Expect to fail
+func TestHasFlagButInvalidEmail_NotValid(t *testing.T) {
+	_, notValid := utils.ExtractEmailFromString("Hello Hey @everybody!", "@")
+	if notValid != "" {
+		assert.Equal(t, "everybody!", notValid)
+		return
+	}
+	t.Fail()
 }
 
 // Test basic functionality with no flags but with email
 // Expect only emails with flag to be stored
 func TestEmailWithoutFlag_Pass(t *testing.T) {
 	expected := []string{"testemail@hotmail.com"}
-	actual := utils.ExtractEmailFromString("Hello @testemail@hotmail.com Hey studentmiche@gmail.com!", "@")
+	actual, notValid := utils.ExtractEmailFromString("Hello @testemail@hotmail.com Hey studentmiche@gmail.com!", "@")
+	if notValid != "" {
+		t.Fail()
+	}
 	assert.ElementsMatch(t, expected, actual)
 }

@@ -23,6 +23,7 @@ func TestMain(m *testing.M) {
 	Router = routes.RunTest(DB)
 	CommonStuSetUp()
 	SuspendSetUp()
+	RetrieveNotificationSetup()
 
 	m.Run()
 
