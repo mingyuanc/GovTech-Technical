@@ -66,15 +66,10 @@ func GetCommonStudentFromTeachersEmail(db *gorm.DB, teachers []string) ([]models
 }
 
 // Returns students from a specific teacher
-func GetStudentFromTeacher(db *gorm.DB, teacherEmail string) ([]models.Student, error) {
+func GetStudentFromTeacher(db *gorm.DB, teacherEmail string) ([]*models.Student, error) {
 	var teacher models.Teacher
 	err := db.Preload("Students").Where("email = ?", teacherEmail).First(&teacher).Error
-	var students []models.Student
-	if err != nil {
-		return nil, err
-	}
-	err = db.Model(&teacher).Association("Students").Find(&students)
-	return students, err
+	return teacher.Students, err
 }
 
 func SuspendStudent(db *gorm.DB, studentEmail string) error {
