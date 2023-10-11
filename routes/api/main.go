@@ -47,4 +47,5 @@ func AddApiRoutes(router *gin.Engine, conn *apicontroller.Connection) {
 	})
 	api.POST("/register", conn.HandleRegister)
 	api.GET("/commonstudents", ExtractAndValidateQueryTeacherParam(), conn.HandleCommonStu)
+	api.POST("/suspend", conn.HandleSuspend)
 }
