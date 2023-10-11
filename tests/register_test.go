@@ -13,7 +13,6 @@ import (
 	"github.com/mingyuanc/GovTech-Technical/utils"
 	"github.com/stretchr/testify/assert"
 	"gorm.io/gorm"
-	"gorm.io/gorm/clause"
 )
 
 var Router *gin.Engine
@@ -27,8 +26,17 @@ func TestMain(m *testing.M) {
 	m.Run()
 
 	// clean up
-	DB.Unscoped().Select(clause.Associations).Delete(&models.Teacher{}, "email LIKE ? ", "test%")
-	DB.Unscoped().Select(clause.Associations).Delete(&models.Student{}, "email LIKE ? ", "test%")
+	var delTeachers []models.Teacher
+	DB.Where("email LIKE ?", "test%").Find(&delTeachers)
+
+	// Step 2: Delete many-to-many associations
+	for _, teacher := range delTeachers {
+		DB.Model(&teacher).Association("Students").Unscoped().Clear()
+	}
+
+	// Step 3: Delete the teachers
+	DB.Unscoped().Delete(&delTeachers)
+	DB.Unscoped().Delete(&models.Student{}, "email LIKE ? ", "test%")
 }
 
 // Test ping route
