@@ -49,6 +49,7 @@ func (conn *Connection) HandleRetrieveNotification(c *gin.Context) {
 			c.IndentedJSON(http.StatusBadRequest, gin.H{
 				"error": fmt.Sprintf("Student parameter at index %d is not found: %s", i, student),
 			})
+			return
 		}
 		if utils.IsStudentSuspended(conn.db, student) {
 			continue
@@ -63,6 +64,7 @@ func (conn *Connection) HandleRetrieveNotification(c *gin.Context) {
 		c.IndentedJSON(http.StatusInternalServerError, gin.H{
 			"error": "Internal server error",
 		})
+		return
 	}
 
 	// Store the result

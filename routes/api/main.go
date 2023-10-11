@@ -20,6 +20,7 @@ func ExtractAndValidateQueryTeacherParam() gin.HandlerFunc {
 				"error": "Required teacher query parameter not provided",
 			})
 			c.Abort()
+			return
 		}
 		// Validates the email address
 		for i, teacher := range teacherParam {
@@ -28,6 +29,7 @@ func ExtractAndValidateQueryTeacherParam() gin.HandlerFunc {
 					"error": fmt.Sprintf("Teacher parameter at index %d is an invalid email: %s", i, teacher),
 				})
 				c.Abort()
+				return
 			}
 
 		}
