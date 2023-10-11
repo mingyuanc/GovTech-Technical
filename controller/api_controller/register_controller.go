@@ -9,7 +9,7 @@ import (
 
 // Controller for the registration endpoint
 func (conn *Connection) HandleRegister(c *gin.Context) {
-	registerBody := models.Register{}
+	registerBody := models.RegisterBody{}
 
 	// Checks if json body is in correct format
 	if err := c.ShouldBind(&registerBody); err != nil {
