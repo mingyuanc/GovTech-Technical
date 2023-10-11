@@ -50,11 +50,19 @@ func ExtractAndValidateNotificationParam() gin.HandlerFunc {
 		if err := c.ShouldBind(&reqBody); err != nil {
 			// change here if want change error
 			c.IndentedJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			c.Abort()
 			return
 		}
 
 		// extracts required value
-		notify := utils.ExtractEmailFromString(reqBody.Notification, "@")
+		notify, notValid := utils.ExtractEmailFromString(reqBody.Notification, "@")
+		if notValid != "" {
+			c.IndentedJSON(400, gin.H{
+				"error": fmt.Sprintf("Student mentioned has an invalid email: %s", notValid),
+			})
+			c.Abort()
+			return
+		}
 		c.Set("notify", notify)
 		c.Set("teacherEmail", reqBody.Teacher)
 

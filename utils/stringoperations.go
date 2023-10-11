@@ -16,7 +16,7 @@ func IsValidEmail(email string) bool {
 	return match
 }
 
-func ExtractEmailFromString(from string, startsWith string) []string {
+func ExtractEmailFromString(from string, startsWith string) ([]string, string) {
 	var ret = make([]string, 0)
 	for _, c := range strings.Split(from, " ") {
 		if !strings.HasPrefix(c, startsWith) {
@@ -25,9 +25,11 @@ func ExtractEmailFromString(from string, startsWith string) []string {
 		email := strings.TrimPrefix(c, startsWith)
 		if IsValidEmail(email) {
 			ret = append(ret, strings.TrimPrefix(c, startsWith))
+			continue
 		}
+		return ret, email
 	}
-	return ret
+	return ret, ""
 }
 
 func IsInArray(is string, in []string) bool {
