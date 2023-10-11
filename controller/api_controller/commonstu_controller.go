@@ -32,6 +32,7 @@ func (conn *Connection) HandleCommonStu(c *gin.Context) {
 		return
 	}
 
+	// Ensure teachers are all present
 	for i, teacher := range teachers {
 		if !utils.IsTeacherPresent(conn.db, teacher) {
 			c.IndentedJSON(http.StatusBadRequest, gin.H{
@@ -41,6 +42,7 @@ func (conn *Connection) HandleCommonStu(c *gin.Context) {
 		}
 	}
 
+	// Runs the query
 	students, err := utils.GetCommonStudentFromTeachersEmail(conn.db, teachers)
 	if err != nil {
 		c.IndentedJSON(http.StatusBadRequest, gin.H{
@@ -49,6 +51,8 @@ func (conn *Connection) HandleCommonStu(c *gin.Context) {
 		return
 	}
 
+	// Store the result
+	// make() is used so the json returned will show [] instead of null if empty
 	var stuEmail = make([]string, 0)
 	for _, stu := range students {
 		stuEmail = append(stuEmail, stu.Email)

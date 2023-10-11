@@ -36,7 +36,7 @@ func IsTeacherPresent(db *gorm.DB, teacherEmail string) bool {
 	return true
 }
 
-// Return an array of unique students from a given list of teachers
+// Returns an array of unique students from a given list of teachers
 func GetCommonStudentFromTeachersEmail(db *gorm.DB, teachers []string) ([]models.Student, error) {
 
 	var students []models.Student
@@ -52,7 +52,7 @@ func GetCommonStudentFromTeachersEmail(db *gorm.DB, teachers []string) ([]models
 	return students, nil
 }
 
-// return students from a specific teacher
+// Returns students from a specific teacher
 func GetStudentFromTeacher(db *gorm.DB, teacherEmail string) ([]models.Student, error) {
 	var teacher models.Teacher
 	err := db.Preload("Students").Where("email = ?", teacherEmail).First(&teacher).Error

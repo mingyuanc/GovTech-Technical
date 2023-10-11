@@ -9,7 +9,7 @@ import (
 )
 
 // Middleware to extract and validate query param
-func ExtractAndValidateQueryParam() gin.HandlerFunc {
+func ExtractAndValidateQueryTeacherParam() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// Extract the teacher query from the request
 		teacherParam := c.QueryArray("teacher")
@@ -27,6 +27,7 @@ func ExtractAndValidateQueryParam() gin.HandlerFunc {
 				})
 				c.Abort()
 			}
+
 		}
 
 		// Store the extracted parameter in the context for later use
@@ -45,5 +46,5 @@ func AddApiRoutes(router *gin.Engine, conn *apicontroller.Connection) {
 		c.String(200, "pong")
 	})
 	api.POST("/register", conn.HandleRegister)
-	api.GET("/commonstudents", ExtractAndValidateQueryParam(), conn.HandleCommonStu)
+	api.GET("/commonstudents", ExtractAndValidateQueryTeacherParam(), conn.HandleCommonStu)
 }
