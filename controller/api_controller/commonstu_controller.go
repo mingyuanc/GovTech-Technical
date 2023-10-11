@@ -25,7 +25,7 @@ func (conn *Connection) HandleCommonStu(c *gin.Context) {
 	// Access validated data
 	teachers, ok := data.([]string)
 	if !ok {
-		log.Panicf("Error: commonStuController: Unable to cast any to string array, server error")
+		log.Panicf("Error: commonStu_Controller: Unable to cast any to string array, server error")
 		c.IndentedJSON(http.StatusInternalServerError, gin.H{
 			"error": "Internal server error",
 		})

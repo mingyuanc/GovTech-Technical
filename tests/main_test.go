@@ -1,4 +1,4 @@
-package api_test
+package tests
 
 import (
 	"net/http"
@@ -23,6 +23,7 @@ func TestMain(m *testing.M) {
 	Router = routes.RunTest(DB)
 	CommonStuSetUp()
 	SuspendSetUp()
+	RetrieveNotificationSetup()
 
 	m.Run()
 

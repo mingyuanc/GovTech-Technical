@@ -49,6 +49,16 @@ func IsTeacherPresent(db *gorm.DB, teacherEmail string) bool {
 	return true
 }
 
+// Checks if specified student is suspended or not
+func IsStudentSuspended(db *gorm.DB, studentEmail string) bool {
+	var student models.Student
+	err := db.Where(&models.Student{Email: studentEmail}).First(&student).Error
+	if err != nil {
+		panic(err)
+	}
+	return *student.IsSuspended
+}
+
 // Returns an array of unique students from a given list of teachers
 func GetCommonStudentFromTeachersEmail(db *gorm.DB, teachers []string) ([]models.Student, error) {
 
@@ -66,15 +76,10 @@ func GetCommonStudentFromTeachersEmail(db *gorm.DB, teachers []string) ([]models
 }
 
 // Returns students from a specific teacher
-func GetStudentFromTeacher(db *gorm.DB, teacherEmail string) ([]models.Student, error) {
+func GetStudentFromTeacher(db *gorm.DB, teacherEmail string) ([]*models.Student, error) {
 	var teacher models.Teacher
 	err := db.Preload("Students").Where("email = ?", teacherEmail).First(&teacher).Error
-	var students []models.Student
-	if err != nil {
-		return nil, err
-	}
-	err = db.Model(&teacher).Association("Students").Find(&students)
-	return students, err
+	return teacher.Students, err
 }
 
 func SuspendStudent(db *gorm.DB, studentEmail string) error {

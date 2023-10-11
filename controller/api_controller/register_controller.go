@@ -20,7 +20,7 @@ func (conn *Connection) HandleRegister(c *gin.Context) {
 
 	//  Check if teacher is present else create new entry
 	var teacher models.Teacher
-	err := conn.db.Where("email = ?", *registerBody.Teacher).FirstOrCreate(&teacher, models.Teacher{Email: *registerBody.Teacher}).Error
+	err := conn.db.Where("email = ?", registerBody.Teacher).FirstOrCreate(&teacher, models.Teacher{Email: registerBody.Teacher}).Error
 	if err != nil {
 		c.IndentedJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -37,7 +37,7 @@ func (conn *Connection) HandleRegister(c *gin.Context) {
 	stuArr := make([]*models.Student, len(registerBody.Students))
 	for i, stuEmail := range registerBody.Students {
 		var student models.Student
-		err := conn.db.Where("email = ?", *stuEmail).FirstOrCreate(&student, models.Student{Email: *stuEmail}).Error
+		err := conn.db.Where("email = ?", stuEmail).FirstOrCreate(&student, models.Student{Email: stuEmail}).Error
 		if err != nil {
 			c.IndentedJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
