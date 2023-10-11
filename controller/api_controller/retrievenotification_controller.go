@@ -1,6 +1,7 @@
 package apicontroller
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 
@@ -11,7 +12,7 @@ import (
 // Controller for the retrieveNotification endpoint
 func (conn *Connection) HandleRetrieveNotification(c *gin.Context) {
 	// Get validated data from query
-	notifyTmp, notifyExists := c.Get("notify")
+	stuArrTmp, notifyExists := c.Get("notify")
 	emailTmp, teacherEmailExist := c.Get("teacherEmail")
 	// Another safety check
 	if !notifyExists || !teacherEmailExist {
@@ -23,7 +24,7 @@ func (conn *Connection) HandleRetrieveNotification(c *gin.Context) {
 	}
 
 	// Cast from any to required type
-	notify, ok := notifyTmp.([]string)
+	stuArr, ok := stuArrTmp.([]string)
 	if !ok {
 		log.Panicf("Error: retrieveNotifications_controller: Unable to cast any to string array, server error")
 		c.IndentedJSON(http.StatusInternalServerError, gin.H{
@@ -40,6 +41,21 @@ func (conn *Connection) HandleRetrieveNotification(c *gin.Context) {
 		return
 	}
 
+	var mentioned = make([]string, 0)
+	// check students in mentioned is suspended
+	for i, student := range stuArr {
+
+		if !utils.IsStudentPresent(conn.db, student) {
+			c.IndentedJSON(http.StatusBadRequest, gin.H{
+				"error": fmt.Sprintf("Student parameter at index %d is not found: %s", i, student),
+			})
+		}
+		if utils.IsStudentSuspended(conn.db, student) {
+			continue
+		}
+		mentioned = append(mentioned, student)
+	}
+
 	// Get all student of a teacher
 	students, err := utils.GetStudentFromTeacher(conn.db, teacherEmail)
 	if err != nil {
@@ -51,9 +67,9 @@ func (conn *Connection) HandleRetrieveNotification(c *gin.Context) {
 
 	// Store the result
 	// make() is used so the json returned will show [] instead of null if empty
-	var ret = notify
+	var ret = mentioned
 	for _, student := range students {
-		if utils.IsInArray(student.Email, notify) {
+		if utils.IsInArray(student.Email, mentioned) {
 			continue
 		}
 		if *student.IsSuspended {
