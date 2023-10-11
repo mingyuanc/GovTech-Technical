@@ -22,6 +22,7 @@ var DB *gorm.DB
 func TestMain(m *testing.M) {
 	DB = utils.Connect()
 	Router = routes.RunTest(DB)
+	CommonStuSetUp()
 
 	m.Run()
 
@@ -142,7 +143,7 @@ func TestNoStudent_400(t *testing.T) {
 
 // Test register route, teacher to student association
 // Expected to exit without error
-func TestTeacherToMutiStudentAssociation_Pass(t *testing.T) {
+func TestTeacherToMultiStudentAssociation_Pass(t *testing.T) {
 	email := "testassociator@gmail.com"
 	students := []string{"testassociated1@gmail.com"}
 	reqBody := &registerBody{Teacher: email, Students: students}
@@ -158,7 +159,7 @@ func TestTeacherToMutiStudentAssociation_Pass(t *testing.T) {
 
 	var teacher models.Teacher
 	DB.Preload("Students").Where("email = ?", email).First(&teacher)
-	assert.Equal(t, teacher.Students[0].Email, "testassociated1@gmail.com")
+	assert.Equal(t, "testassociated1@gmail.com", teacher.Students[0].Email)
 
 	// add another student to teacher
 	students = []string{"testassociated2@gmail.com"}
@@ -171,13 +172,13 @@ func TestTeacherToMutiStudentAssociation_Pass(t *testing.T) {
 	assert.Equal(t, 204, w.Code)
 
 	DB.Preload("Students").Where("email = ?", email).First(&teacher)
-	assert.Equal(t, teacher.Students[0].Email, "testassociated1@gmail.com")
-	assert.Equal(t, teacher.Students[1].Email, "testassociated2@gmail.com")
+	assert.Equal(t, "testassociated1@gmail.com", teacher.Students[0].Email)
+	assert.Equal(t, "testassociated2@gmail.com", teacher.Students[1].Email)
 }
 
 // Test register route, teacher to student association
 // Expected to exit without error
-func TestStudentToMutiTeacherAssociation_Pass(t *testing.T) {
+func TestStudentToMultiTeacherAssociation_Pass(t *testing.T) {
 	email := "testassociated1@gmail.com"
 	students := []string{"testassociator@gmail.com"}
 	reqBody := &registerBody{Teacher: email, Students: students}
@@ -193,7 +194,7 @@ func TestStudentToMutiTeacherAssociation_Pass(t *testing.T) {
 
 	var student models.Student
 	DB.Preload("Teachers").Where("email = ?", "testassociator@gmail.com").First(&student)
-	assert.Equal(t, student.Teachers[0].Email, "testassociated1@gmail.com")
+	assert.Equal(t, "testassociated1@gmail.com", student.Teachers[0].Email)
 
 	// add another teacher to student
 	email = "testassociated2@gmail.com"
@@ -206,6 +207,6 @@ func TestStudentToMutiTeacherAssociation_Pass(t *testing.T) {
 	assert.Equal(t, 204, w.Code)
 
 	DB.Preload("Teachers").Where("email = ?", "testassociator@gmail.com").First(&student)
-	assert.Equal(t, student.Teachers[0].Email, "testassociated1@gmail.com")
-	assert.Equal(t, student.Teachers[1].Email, "testassociated2@gmail.com")
+	assert.Equal(t, "testassociated1@gmail.com", student.Teachers[0].Email)
+	assert.Equal(t, "testassociated2@gmail.com", student.Teachers[1].Email)
 }

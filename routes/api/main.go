@@ -19,7 +19,6 @@ func ExtractAndValidateQueryParam() gin.HandlerFunc {
 			})
 			c.Abort()
 		}
-
 		// Validates the email address
 		for i, teacher := range teacherParam {
 			if !utils.IsValidEmail(teacher) {

@@ -23,27 +23,32 @@ func Connect() *gorm.DB {
 	return db
 }
 
+// Checks if specified teacher is present in the database
+func IsTeacherPresent(db *gorm.DB, teacherEmail string) bool {
+	var teacher models.Teacher
+	err := db.Where(&models.Teacher{Email: teacherEmail}).First(&teacher).Error
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return false
+	}
+	if err != nil {
+		panic(err)
+	}
+	return true
+}
+
 // Return an array of unique students from a given list of teachers
-func GetUniqueStudentFromTeachersEmail(db *gorm.DB, teachers []string) ([]models.Student, error) {
+func GetCommonStudentFromTeachersEmail(db *gorm.DB, teachers []string) ([]models.Student, error) {
 
-	uniqueStudent := make(map[string]models.Student)
-	// Get unique student frm each teacher
-	for _, teacher := range teachers {
-		students, err := GetStudentFromTeacher(db, teacher)
-		if err != nil {
-			return nil, errors.New("Unable to find a teacher with email: " + teacher)
-		}
-		for _, student := range students {
-			println(student.Email)
-			uniqueStudent[student.Email] = student
-		}
-	}
-
-	// Get back an array
 	var students []models.Student
-	for _, stuArr := range uniqueStudent {
-		students = append(students, stuArr)
-	}
+
+	db.
+		Table("students").
+		Joins("JOIN teacher_student ON students.id = teacher_student.student_id").
+		Joins("JOIN teachers ON teachers.id = teacher_student.teacher_id").
+		Where("teachers.email IN ?", teachers).
+		Group("students.id").
+		Having("COUNT(DISTINCT teachers.email) = ?", len(teachers)).
+		Find(&students)
 	return students, nil
 }
 

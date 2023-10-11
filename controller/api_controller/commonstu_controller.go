@@ -1,6 +1,7 @@
 package apicontroller
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 
@@ -12,6 +13,7 @@ import (
 func (conn *Connection) HandleCommonStu(c *gin.Context) {
 	// Get validated data from query
 	data, exists := c.Get("teachersParam")
+	// Another safety check
 	if !exists {
 		// Handle the case where the parameter is not found
 		c.IndentedJSON(http.StatusBadRequest, gin.H{
@@ -30,14 +32,29 @@ func (conn *Connection) HandleCommonStu(c *gin.Context) {
 		return
 	}
 
-	students, err := utils.GetUniqueStudentFromTeachersEmail(conn.db, teachers)
+	for i, teacher := range teachers {
+		if !utils.IsTeacherPresent(conn.db, teacher) {
+			c.IndentedJSON(http.StatusBadRequest, gin.H{
+				"error": fmt.Sprintf("Teacher parameter at index %d is not found: %s", i, teacher),
+			})
+			return
+		}
+	}
+
+	students, err := utils.GetCommonStudentFromTeachersEmail(conn.db, teachers)
 	if err != nil {
 		c.IndentedJSON(http.StatusBadRequest, gin.H{
 			"error": err.Error(),
 		})
 		return
 	}
+
+	var stuEmail = make([]string, 0)
+	for _, stu := range students {
+		stuEmail = append(stuEmail, stu.Email)
+	}
+
 	c.IndentedJSON(http.StatusOK, gin.H{
-		"students": students,
+		"students": stuEmail,
 	})
 }
