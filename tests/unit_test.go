@@ -3,7 +3,7 @@ package tests
 import (
 	"testing"
 
-	"github.com/mingyuanc/GovTech-Technical/utils"
+	"github.com/mingyuanc/GovTech-Technical/src/utils"
 	"github.com/stretchr/testify/assert"
 )
 

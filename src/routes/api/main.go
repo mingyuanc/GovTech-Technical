@@ -5,9 +5,9 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	apicontroller "github.com/mingyuanc/GovTech-Technical/controller/api_controller"
-	"github.com/mingyuanc/GovTech-Technical/models"
-	"github.com/mingyuanc/GovTech-Technical/utils"
+	apicontroller "github.com/mingyuanc/GovTech-Technical/src/controller/api_controller"
+	"github.com/mingyuanc/GovTech-Technical/src/models"
+	"github.com/mingyuanc/GovTech-Technical/src/utils"
 )
 
 // Middleware to extract and validate query param for common stu endpoint
@@ -22,7 +22,8 @@ func ExtractAndValidateQueryTeacherParam() gin.HandlerFunc {
 			c.Abort()
 			return
 		}
-		// Validates the email address
+
+		// Validates the email addresses
 		for i, teacher := range teacherParam {
 			if !utils.IsValidEmail(teacher) {
 				c.IndentedJSON(400, gin.H{
@@ -31,7 +32,6 @@ func ExtractAndValidateQueryTeacherParam() gin.HandlerFunc {
 				c.Abort()
 				return
 			}
-
 		}
 
 		// Store the extracted parameter in the context for later use

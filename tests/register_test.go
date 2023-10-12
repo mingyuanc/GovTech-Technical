@@ -7,7 +7,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/mingyuanc/GovTech-Technical/models"
+	"github.com/mingyuanc/GovTech-Technical/src/models"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -58,7 +58,7 @@ func TestBadTeacherEmail_400(t *testing.T) {
 
 // Test register route, bad student email for index 0
 // Expected 400 status code
-func TestOneBadStudentrEmail_400(t *testing.T) {
+func TestOneBadStudentEmail_400(t *testing.T) {
 	email := "testTeacher@gmail.com"
 	students := []string{"teststu3.com",
 		"teststu2@u.nus.edu", "teststu1@gmail.com"}
@@ -98,6 +98,7 @@ func TestNoStudent_400(t *testing.T) {
 	assert.JSONEq(t, `{
 		"error": "Must provide at least one student"
 	}`,
+
 		w.Body.String())
 }
 

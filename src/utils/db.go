@@ -2,8 +2,9 @@ package utils
 
 import (
 	"errors"
+	"os"
 
-	"github.com/mingyuanc/GovTech-Technical/models"
+	"github.com/mingyuanc/GovTech-Technical/src/models"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -11,11 +12,11 @@ import (
 // Connects to the db and return a connection variable
 func Connect() *gorm.DB {
 	// TODO use env
-	// dsn := os.Getenv("DATABASE_URL")
-	// db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
-
-	dsn := "postgres://pg:pg@localhost:5432/pg"
+	dsn := os.Getenv("DATABASE_URL")
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+
+	// dsn := "postgres://pg:pg@localhost:5432/pg"
+	// db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		panic(err)
 	}
@@ -64,15 +65,15 @@ func GetCommonStudentFromTeachersEmail(db *gorm.DB, teachers []string) ([]models
 
 	var students []models.Student
 
-	db.
+	err := db.
 		Table("students").
 		Joins("JOIN teacher_student ON students.id = teacher_student.student_id").
 		Joins("JOIN teachers ON teachers.id = teacher_student.teacher_id").
 		Where("teachers.email IN ?", teachers).
 		Group("students.id").
 		Having("COUNT(DISTINCT teachers.email) = ?", len(teachers)).
-		Find(&students)
-	return students, nil
+		Find(&students).Error
+	return students, err
 }
 
 // Returns students from a specific teacher

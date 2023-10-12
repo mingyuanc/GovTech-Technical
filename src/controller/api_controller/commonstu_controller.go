@@ -2,20 +2,22 @@ package apicontroller
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/mingyuanc/GovTech-Technical/utils"
+	"github.com/mingyuanc/GovTech-Technical/src/utils"
 )
 
 // Controller for the common student endpoint
 func (conn *Connection) HandleCommonStu(c *gin.Context) {
+	conn.logger.Println("api: new common student request")
+
 	// Get validated data from query
 	data, exists := c.Get("teachersParam")
 	// Another safety check
 	if !exists {
 		// Handle the case where the parameter is not found
+		conn.logger.Println("api/commonstudents: Teacher query parameter not provided")
 		c.IndentedJSON(http.StatusBadRequest, gin.H{
 			"error": "Required teacher query parameter not provided",
 		})
@@ -25,7 +27,7 @@ func (conn *Connection) HandleCommonStu(c *gin.Context) {
 	// Access validated data
 	teachers, ok := data.([]string)
 	if !ok {
-		log.Panicf("Error: commonStu_Controller: Unable to cast any to string array, server error")
+		conn.logger.Println("api/commonstudents: Unable to cast any to string array, server error")
 		c.IndentedJSON(http.StatusInternalServerError, gin.H{
 			"error": "Internal server error",
 		})
@@ -35,8 +37,10 @@ func (conn *Connection) HandleCommonStu(c *gin.Context) {
 	// Ensure teachers are all present
 	for i, teacher := range teachers {
 		if !utils.IsTeacherPresent(conn.db, teacher) {
+			errStr := fmt.Sprintf("Teacher parameter at index %d is not found: %s", i, teacher)
+			conn.logger.Println("api/commonstudents: " + errStr)
 			c.IndentedJSON(http.StatusBadRequest, gin.H{
-				"error": fmt.Sprintf("Teacher parameter at index %d is not found: %s", i, teacher),
+				"error": errStr,
 			})
 			return
 		}
@@ -45,8 +49,9 @@ func (conn *Connection) HandleCommonStu(c *gin.Context) {
 	// Runs the query
 	students, err := utils.GetCommonStudentFromTeachersEmail(conn.db, teachers)
 	if err != nil {
-		c.IndentedJSON(http.StatusBadRequest, gin.H{
-			"error": err.Error(),
+		conn.logger.Println("api/commonstudents: " + err.Error())
+		c.IndentedJSON(http.StatusInternalServerError, gin.H{
+			"error": "Internal Server Error",
 		})
 		return
 	}

@@ -10,13 +10,11 @@ RUN go mod download
 
 # Copy the source code. Note the slash at the end, as explained in
 # https://docs.docker.com/engine/reference/builder/#copy
-COPY ./ ./
+COPY src ./
 
 
 # Build
 RUN go build -o /backend
-
-FROM build As test
 
 FROM alpine:3.18
 
