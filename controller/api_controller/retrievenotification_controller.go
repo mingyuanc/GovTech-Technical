@@ -44,6 +44,15 @@ func (conn *Connection) HandleRetrieveNotification(c *gin.Context) {
 		return
 	}
 
+	// Check if teacher is registered
+	if !utils.IsTeacherPresent(conn.db, teacherEmail) {
+		conn.logger.Println("api/retrievefornotifications: Teacher not found: " + teacherEmail)
+		c.IndentedJSON(http.StatusBadRequest, gin.H{
+			"error": "Teacher not found: " + teacherEmail,
+		})
+		return
+	}
+
 	var mentioned = make([]string, 0)
 	// check students in mentioned is suspended
 	for i, student := range stuArr {
