@@ -1,5 +1,5 @@
 version: '3.8'
-
+name: govtech-technical
 services:
   db:
     image: postgres:alpine3.18
@@ -15,9 +15,9 @@ services:
       test: ["CMD-SHELL", "pg_isready -U pg -d pg"]
       interval: 1s
       timeout: 1s
-  api:
-    image: api
+  govtech-technical:
     build: .
+    image: mingyuanc/govtech-technical:latest
     depends_on:
       db:
         condition: service_healthy
