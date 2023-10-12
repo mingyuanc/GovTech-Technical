@@ -2,8 +2,9 @@ package utils
 
 import (
 	"errors"
+	"os"
 
-	"github.com/mingyuanc/GovTech-Technical/models"
+	"github.com/mingyuanc/GovTech-Technical/src/models"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -11,11 +12,11 @@ import (
 // Connects to the db and return a connection variable
 func Connect() *gorm.DB {
 	// TODO use env
-	// dsn := os.Getenv("DATABASE_URL")
-	// db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
-
-	dsn := "postgres://pg:pg@localhost:5432/pg"
+	dsn := os.Getenv("DATABASE_URL")
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+
+	// dsn := "postgres://pg:pg@localhost:5432/pg"
+	// db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		panic(err)
 	}

@@ -7,7 +7,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/mingyuanc/GovTech-Technical/models"
+	"github.com/mingyuanc/GovTech-Technical/src/models"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -26,7 +26,7 @@ func CommonStuSetUp() {
 		Email: "testming@gmail.com",
 	}
 	noCommon := models.Teacher{
-		Email: "testnoCommon@gmail.com",
+		Email: "testnocommon@gmail.com",
 	}
 
 	DB.Create(&ken)
@@ -82,11 +82,11 @@ func TestProvidedCase2_200(t *testing.T) {
 	assert.True(t, reflect.DeepEqual(expected, data))
 }
 
-// Test get common student, expected no students as per given test case
+// Test get common student, expected no common student
 // Expected 200 status code
 func TestNoCommon_200(t *testing.T) {
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest("GET", "/api/commonstudents?teacher=teacherken%40gmail.com&teacher=testnoCommon%40gmail.com", nil)
+	req, _ := http.NewRequest("GET", "/api/commonstudents?teacher=testken%40gmail.com&teacher=testnocommon%40gmail.com", nil)
 	Router.ServeHTTP(w, req)
 	assert.Equal(t, 200, w.Code)
 

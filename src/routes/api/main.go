@@ -5,9 +5,9 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	apicontroller "github.com/mingyuanc/GovTech-Technical/controller/api_controller"
-	"github.com/mingyuanc/GovTech-Technical/models"
-	"github.com/mingyuanc/GovTech-Technical/utils"
+	apicontroller "github.com/mingyuanc/GovTech-Technical/src/controller/api_controller"
+	"github.com/mingyuanc/GovTech-Technical/src/models"
+	"github.com/mingyuanc/GovTech-Technical/src/utils"
 )
 
 // Middleware to extract and validate query param for common stu endpoint

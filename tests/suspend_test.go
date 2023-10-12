@@ -7,7 +7,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/mingyuanc/GovTech-Technical/models"
+	"github.com/mingyuanc/GovTech-Technical/src/models"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -30,6 +30,12 @@ func TestSuspend_204(t *testing.T) {
 
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest("POST", "/api/suspend", payloadBuf)
+	req.Header.Set("Content-Type", "application/json")
+	Router.ServeHTTP(w, req)
+	assert.Equal(t, 204, w.Code)
+
+	// Test if can suspend the same student
+	req, _ = http.NewRequest("POST", "/api/suspend", payloadBuf)
 	req.Header.Set("Content-Type", "application/json")
 	Router.ServeHTTP(w, req)
 	assert.Equal(t, 204, w.Code)
