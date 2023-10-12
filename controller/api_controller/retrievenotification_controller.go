@@ -2,7 +2,6 @@ package apicontroller
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -11,12 +10,16 @@ import (
 
 // Controller for the retrieveNotification endpoint
 func (conn *Connection) HandleRetrieveNotification(c *gin.Context) {
+	conn.logger.Println("api: new retrievefornotifications request")
+
 	// Get validated data from query
 	stuArrTmp, notifyExists := c.Get("notify")
 	emailTmp, teacherEmailExist := c.Get("teacherEmail")
+
 	// Another safety check
 	if !notifyExists || !teacherEmailExist {
 		// Handle the case where the parameter is not found
+		conn.logger.Println("api/retrievefornotifications: parameter not present after middleware")
 		c.IndentedJSON(http.StatusBadRequest, gin.H{
 			"error": "Required parameter not provided",
 		})
@@ -26,7 +29,7 @@ func (conn *Connection) HandleRetrieveNotification(c *gin.Context) {
 	// Cast from any to required type
 	stuArr, ok := stuArrTmp.([]string)
 	if !ok {
-		log.Panicf("Error: retrieveNotifications_controller: Unable to cast any to string array, server error")
+		conn.logger.Println("api/retrievefornotifications: Unable to cast any to string array, server error")
 		c.IndentedJSON(http.StatusInternalServerError, gin.H{
 			"error": "Internal server error",
 		})
@@ -34,7 +37,7 @@ func (conn *Connection) HandleRetrieveNotification(c *gin.Context) {
 	}
 	teacherEmail, ok := emailTmp.(string)
 	if !ok {
-		log.Panicf("Error: retrieveNotifications_controller: Unable to cast any to string array, server error")
+		conn.logger.Println("api/retrievefornotifications: Unable to cast any to string, server error")
 		c.IndentedJSON(http.StatusInternalServerError, gin.H{
 			"error": "Internal server error",
 		})
@@ -46,8 +49,10 @@ func (conn *Connection) HandleRetrieveNotification(c *gin.Context) {
 	for i, student := range stuArr {
 
 		if !utils.IsStudentPresent(conn.db, student) {
+			errStr := fmt.Sprintf("Student parameter at index %d is not found: %s", i, student)
+			conn.logger.Println("api/retrievefornotifications: " + errStr)
 			c.IndentedJSON(http.StatusBadRequest, gin.H{
-				"error": fmt.Sprintf("Student parameter at index %d is not found: %s", i, student),
+				"error": errStr,
 			})
 			return
 		}
@@ -60,7 +65,7 @@ func (conn *Connection) HandleRetrieveNotification(c *gin.Context) {
 	// Get all student of a teacher
 	students, err := utils.GetStudentFromTeacher(conn.db, teacherEmail)
 	if err != nil {
-		log.Panicf("Error: retrieveNotifications_controller: Unable to cast any to string array, server error")
+		conn.logger.Println("api/retrievefornotifications: " + err.Error())
 		c.IndentedJSON(http.StatusInternalServerError, gin.H{
 			"error": "Internal server error",
 		})
