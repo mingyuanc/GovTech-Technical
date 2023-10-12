@@ -7,7 +7,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/mingyuanc/GovTech-Technical/src/models"
+	"github.com/mingyuanc/GovTech-Technical/models"
 	"github.com/stretchr/testify/assert"
 )
 

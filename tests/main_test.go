@@ -6,9 +6,9 @@ import (
 	"testing"
 
 	"github.com/gin-gonic/gin"
-	"github.com/mingyuanc/GovTech-Technical/src/models"
-	"github.com/mingyuanc/GovTech-Technical/src/routes"
-	"github.com/mingyuanc/GovTech-Technical/src/utils"
+	"github.com/mingyuanc/GovTech-Technical/models"
+	"github.com/mingyuanc/GovTech-Technical/routes"
+	"github.com/mingyuanc/GovTech-Technical/utils"
 	"github.com/stretchr/testify/assert"
 	"gorm.io/gorm"
 )

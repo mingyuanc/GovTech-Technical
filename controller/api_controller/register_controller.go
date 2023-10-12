@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/mingyuanc/GovTech-Technical/src/models"
+	"github.com/mingyuanc/GovTech-Technical/models"
 )
 
 // Controller for the registration endpoint

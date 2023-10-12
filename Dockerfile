@@ -2,7 +2,7 @@
 FROM golang:1.21.2-alpine3.18 as build
 
 # Set destination for COPY
-WORKDIR /go/src/api
+WORKDIR /api
 
 # Download Go modules
 COPY go.mod go.sum ./
@@ -10,8 +10,7 @@ RUN go mod download
 
 # Copy the source code. Note the slash at the end, as explained in
 # https://docs.docker.com/engine/reference/builder/#copy
-COPY src ./
-
+COPY . .
 
 # Build
 RUN go build -o /backend

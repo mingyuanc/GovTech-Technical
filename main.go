@@ -3,8 +3,8 @@ package main
 import (
 	"fmt"
 
-	"github.com/mingyuanc/GovTech-Technical/src/routes"
-	"github.com/mingyuanc/GovTech-Technical/src/utils"
+	"github.com/mingyuanc/GovTech-Technical/routes"
+	"github.com/mingyuanc/GovTech-Technical/utils"
 )
 
 func main() {

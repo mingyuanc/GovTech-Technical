@@ -4,7 +4,7 @@ import (
 	"errors"
 	"os"
 
-	"github.com/mingyuanc/GovTech-Technical/src/models"
+	"github.com/mingyuanc/GovTech-Technical/models"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )

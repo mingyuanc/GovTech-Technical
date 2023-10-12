@@ -8,8 +8,8 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/mingyuanc/GovTech-Technical/src/models"
-	"github.com/mingyuanc/GovTech-Technical/src/utils"
+	"github.com/mingyuanc/GovTech-Technical/models"
+	"github.com/mingyuanc/GovTech-Technical/utils"
 	"github.com/stretchr/testify/assert"
 )
 

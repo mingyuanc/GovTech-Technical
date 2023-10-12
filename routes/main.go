@@ -2,8 +2,8 @@ package routes
 
 import (
 	"github.com/gin-gonic/gin"
-	apicontroller "github.com/mingyuanc/GovTech-Technical/src/controller/api_controller"
-	"github.com/mingyuanc/GovTech-Technical/src/routes/api"
+	apicontroller "github.com/mingyuanc/GovTech-Technical/controller/api_controller"
+	"github.com/mingyuanc/GovTech-Technical/routes/api"
 	"gorm.io/gorm"
 )
 

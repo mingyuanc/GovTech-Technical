@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/mingyuanc/GovTech-Technical/src/utils"
+	"github.com/mingyuanc/GovTech-Technical/utils"
 )
 
 // Controller for the common student endpoint
