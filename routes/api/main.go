@@ -22,7 +22,8 @@ func ExtractAndValidateQueryTeacherParam() gin.HandlerFunc {
 			c.Abort()
 			return
 		}
-		// Validates the email address
+
+		// Validates the email addresses
 		for i, teacher := range teacherParam {
 			if !utils.IsValidEmail(teacher) {
 				c.IndentedJSON(400, gin.H{
@@ -31,7 +32,6 @@ func ExtractAndValidateQueryTeacherParam() gin.HandlerFunc {
 				c.Abort()
 				return
 			}
-
 		}
 
 		// Store the extracted parameter in the context for later use
