@@ -12,35 +12,35 @@ Before getting started, make sure you have the following software installed on y
 
 1. **Copy the docker-compose.yml file**:
 
-   ```yml
-   version: "3.8"
-   name: govtech-technical
-   services:
-     db:
-       image: postgres:alpine3.18
-       volumes:
-         - ./databases/db:/var/lib/postgresql/data
-       environment:
-         - POSTGRES_NAME=pg
-         - POSTGRES_USER=pg
-         - POSTGRES_PASSWORD=pg
-       ports:
-         - "5432:5432"
-       healthcheck:
-         test: ["CMD-SHELL", "pg_isready -U pg -d pg"]
-         interval: 1s
-         timeout: 1s
-     govtech-technical:
-       image: mingyuanc/govtech-technical:latest
-       depends_on:
-         db:
-           condition: service_healthy
-       ports:
-         - "8282:8282"
-       environment:
-         - DATABASE_URL=postgres://pg:pg@db:5432/pg
-       command: ["sh", "-c", "./backend"]
-   ```
+```yml
+version: "3.8"
+name: govtech-technical
+services:
+  db:
+    image: postgres:alpine3.18
+    volumes:
+      - ./databases/db:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_NAME=pg
+      - POSTGRES_USER=pg
+      - POSTGRES_PASSWORD=pg
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U pg -d pg"]
+      interval: 1s
+      timeout: 1s
+  govtech-technical:
+    image: mingyuanc/govtech-technical:latest
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8282:8282"
+    environment:
+      - DATABASE_URL=postgres://pg:pg@db:5432/pg
+    command: ["sh", "-c", "./backend"]
+```
 
 1. **Then run `docker-compose up` to spin up the server and the database**:
 
@@ -60,50 +60,6 @@ Expected outcome:
 
 ```
 pong
-```
-
-### `GET api/commonstudents/` - Finds common student among list of teachers
-
-Retrieve a list of students common to a given list of teachers, in other words, retrieve students who are register to all of the given teachers. As per user story, suspended students will be shown.
-
-Constraints:
-
-- The teacher query parameter cannot be empty.
-- The teacher must already be registered.
-- Email must be valid.
-
-Example of usage:
-
-`/api/commonstudents?teacher=teacherken%40gmail.com`
-
-Expected outcome:
-
-```json
-{
-  "students": [
-    "commonstudent1@gmail.com",
-    "commonstudent2@gmail.com",
-    "student_only_under_teacher_ken@gmail.com"
-  ]
-}
-```
-
-Example Error outcome:
-
-1. Invalid teacher email
-
-```json
-{
-  "error": "Teacher parameter at index 0 is an invalid email: testNotFound@gmail"
-}
-```
-
-2. Teacher is not registered
-
-```json
-{
-  "error": "Teacher parameter at index 0 is not found: testNotFound@gmail.com"
-}
 ```
 
 ### `POST /api/register` - Registers a teacher to a list of students
@@ -188,6 +144,50 @@ Example Error outcome:
 ```json
 {
   "error": "Student not found: studentmary@gmail.com"
+}
+```
+
+### `GET api/commonstudents/` - Finds common student among list of teachers
+
+Retrieve a list of students common to a given list of teachers, in other words, retrieve students who are register to all of the given teachers. As per user story, suspended students will be shown.
+
+Constraints:
+
+- The teacher query parameter cannot be empty.
+- The teacher must already be registered.
+- Email must be valid.
+
+Example of usage:
+
+`/api/commonstudents?teacher=teacherken%40gmail.com`
+
+Expected outcome:
+
+```json
+{
+  "students": [
+    "commonstudent1@gmail.com",
+    "commonstudent2@gmail.com",
+    "student_only_under_teacher_ken@gmail.com"
+  ]
+}
+```
+
+Example Error outcome:
+
+1. Invalid teacher email
+
+```json
+{
+  "error": "Teacher parameter at index 0 is an invalid email: testNotFound@gmail"
+}
+```
+
+2. Teacher is not registered
+
+```json
+{
+  "error": "Teacher parameter at index 0 is not found: testNotFound@gmail.com"
 }
 ```
 
