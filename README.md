@@ -16,30 +16,30 @@ Before getting started, make sure you have the following software installed on y
    version: "3.8"
    name: govtech-technical
    services:
-      db:
-        image: postgres:alpine3.18
-        volumes:
-          - ./databases/db:/var/lib/postgresql/data
-        environment:
-          - POSTGRES_NAME=pg
-          - POSTGRES_USER=pg
-          - POSTGRES_PASSWORD=pg
-        ports:
-          - "5432:5432"
-        healthcheck:
-          test: ["CMD-SHELL", "pg_isready -U pg -d pg"]
-          interval: 1s
-          timeout: 1s
-      govtech-technical:
-        image: mingyuanc/govtech-technical:latest
-        depends_on:
-          db:
-            condition: service_healthy
-        ports:
-          - "8282:8282"
-        environment:
-          - DATABASE_URL=postgres://pg:pg@db:5432/pg
-        command: ["sh", "-c", "./backend"]
+     db:
+       image: postgres:alpine3.18
+       volumes:
+         - ./databases/db:/var/lib/postgresql/data
+       environment:
+         - POSTGRES_NAME=pg
+         - POSTGRES_USER=pg
+         - POSTGRES_PASSWORD=pg
+       ports:
+         - "5432:5432"
+       healthcheck:
+         test: ["CMD-SHELL", "pg_isready -U pg -d pg"]
+         interval: 1s
+         timeout: 1s
+     govtech-technical:
+       image: mingyuanc/govtech-technical:latest
+       depends_on:
+         db:
+           condition: service_healthy
+       ports:
+         - "8282:8282"
+       environment:
+         - DATABASE_URL=postgres://pg:pg@db:5432/pg
+       command: ["sh", "-c", "./backend"]
    ```
 
 1. **Then run `docker-compose up` to spin up the server and the database**:
